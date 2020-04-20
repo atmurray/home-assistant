@@ -23,6 +23,11 @@ class AcmedaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         self.hub: Optional[aiopulse.Hub] = None
         self.discovered_hubs: Optional[Dict[str, aiopulse.Hub]] = None
 
+    async def async_step_init(self, user_input=None):
+        """Handle a flow start."""
+        # This is for backwards compatibility.
+        return await self.async_step_user(user_input)
+
     async def async_step_user(self, user_input=None):
         """Handle a flow initialized by the user."""
         if (
