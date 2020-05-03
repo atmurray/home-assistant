@@ -16,12 +16,14 @@ from homeassistant.components.cover import (
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from .base import AcmedaBase
-from .const import ACMEDA_HUB_UPDATE
+from .const import ACMEDA_HUB_UPDATE, DOMAIN
 from .helpers import add_entities
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the Acmeda Rollers from a config entry."""
+    hub = hass.data[DOMAIN][config_entry.entry_id]
+
     update_lock = asyncio.Lock()
     current = set()
 
@@ -31,8 +33,10 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 hass, AcmedaCover, config_entry, current, async_add_entities
             )
 
-    async_dispatcher_connect(
-        hass, ACMEDA_HUB_UPDATE.format(config_entry.entry_id), async_update
+    hub.cleanup_callbacks.append(
+        async_dispatcher_connect(
+            hass, ACMEDA_HUB_UPDATE.format(config_entry.entry_id), async_update
+        )
     )
 
 
